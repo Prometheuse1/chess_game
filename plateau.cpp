@@ -10,12 +10,26 @@ plateau::~plateau()
 	
 }
 
-int plateau::evalcavalier(int ld,int cd,int la,int ca)
+int plateau::check_arival_space(int ld,int cd,int la,int ca)
 {
-	if(((ld+2==la)&&(cd+1==ca)) || ((ld+2==la)&&(cd-1==ca)) || ((ld+1==la)&&(cd+2==ca)) || ((ld-1==la)&&(cd+2==ca)) 
-	|| ((ld-2==la)&&(cd+1==ca)) || ((ld-2==la)&&(cd-1==ca)) || ((ld+1==la)&&(cd-2==ca)) || ((ld-1==la)&&(cd-2==ca)) )
+	if((ech[ld][cd]>0 && ech[la][ca]<0) ||	(ech[ld][cd]<0 && ech[la][ca]>0) || ech[la][ca]==0)
 	{
 		return 1;
+	}
+	return 0;
+}
+
+int plateau::evalpion(int ld,int cd,int la,int ca)
+{
+	//TODO
+}
+
+int plateau::evalcavalier(int ld,int cd,int la,int ca)
+{
+	if( ((ld+2==la)&&(cd+1==ca)) || ((ld+2==la)&&(cd-1==ca)) || ((ld+1==la)&&(cd+2==ca)) || ((ld-1==la)&&(cd+2==ca)) 
+	|| ((ld-2==la)&&(cd+1==ca)) || ((ld-2==la)&&(cd-1==ca)) || ((ld+1==la)&&(cd-2==ca)) || ((ld-1==la)&&(cd-2==ca)) )
+	{
+		return check_arival_space(ld,cd,la,ca);
 	}
 	else
 	{
@@ -70,7 +84,7 @@ int plateau::evaltour(int ld,int cd,int la,int ca)
 				i++;
 			}
 		}
-		else if(cd>ca)
+		if(ld>la)
 		{
 			i=ld-1;
 			while(i>la && cheminvide==true)
@@ -86,11 +100,7 @@ int plateau::evaltour(int ld,int cd,int la,int ca)
 	
 	if(cheminvide==true)
 	{
-		if((ech[ld][cd]>0 && ech[la][ca]<0) ||	(ech[ld][cd]<0 && ech[la][ca]>0) || ech[la][ca]==0)
-		{
-			return 1;
-		}
-		
+		return check_arival_space(ld,cd,la,ca);
 	}
 	else 
 	{
@@ -161,11 +171,7 @@ int plateau::evalfou(int ld,int cd,int la,int ca)
 	
 	if(cheminvide==true)
 	{
-		if((ech[ld][cd]>0 && ech[la][ca]<0) ||	(ech[ld][cd]<0 && ech[la][ca]>0) || ech[la][ca]==0)
-		{
-			return 1;
-		}
-		
+		return check_arival_space(ld,cd,la,ca);
 	}
 	else 
 	{
@@ -177,6 +183,10 @@ int plateau::evaluation(int ld,int cd,int la,int ca)
 {
 	switch(ech[ld][cd])
 	{
+		case 1: return evalpion(ld,cd,la,ca);
+			break;
+		case -1: return evalpion(ld,cd,la,ca);
+			break;
 		case 2: return evaltour(ld,cd,la,ca);
 			break;
 		case -2: return evaltour(ld,cd,la,ca);
@@ -189,8 +199,9 @@ int plateau::evaluation(int ld,int cd,int la,int ca)
 			break;
 		case -4: return evalfou(ld,cd,la,ca);
 			break;
-			
-			
+		default:
+			return 1;
+			break;
 	}
 }
 
