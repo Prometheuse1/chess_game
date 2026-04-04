@@ -16,12 +16,43 @@ int plateau::check_arival_space(int ld,int cd,int la,int ca)
 	{
 		return 1;
 	}
+	
 	return 0;
 }
 
 int plateau::eval_pion(int ld,int cd,int la,int ca)
 {
-	//TODO
+	if(ech[ld][cd]==1)
+	{
+		// 1 case
+		if(la==ld+1 && ca==cd && ech[la][ca]==0)
+            return 1;
+
+		// 2 case
+        if(ld==1 && la==ld+2 && ech[ld+1][cd]==0 && ech[la][ca]==0)
+        	return 1;
+        
+        // attack
+        if(la==ld+1 && (ca==cd+1 || ca==cd-1) && ech[la][ca]<0)
+        	return 1;
+	}
+	
+	if(ech[ld][cd]==-1)
+	{
+		// 1 case
+		if(la==ld-1 && ca==cd && ech[la][ca]==0)
+            return 1;
+
+		// 2 case
+        if(ld==6 && la==ld-2 && ech[ld-1][cd]==0 && ech[la][ca]==0)
+        	return 1;
+        
+        // attack
+        if(la==ld-1 && (ca==cd+1 || ca==cd-1) && ech[la][ca]>0)
+        	return 1;
+	}
+	
+	return 0;
 }
 
 int plateau::eval_cavalier(int ld,int cd,int la,int ca)
@@ -168,25 +199,18 @@ int plateau::evaluation(int ld,int cd,int la,int ca)
 {
 	switch(ech[ld][cd])
 	{
-		case 1: return eval_pion(ld,cd,la,ca);
-			break;
-		case -1: return eval_pion(ld,cd,la,ca);
-			break;
-		case 2: return eval_tour(ld,cd,la,ca);
-			break;
-		case -2: return eval_tour(ld,cd,la,ca);
-			break;
-		case 3: return eval_cavalier(ld,cd,la,ca);
-			break;
-		case -3: return eval_cavalier(ld,cd,la,ca);
-			break;
-		case 4: return eval_fou(ld,cd,la,ca);
-			break;
-		case -4: return eval_fou(ld,cd,la,ca);
-			break;
-		default:
-			return 1;
-			break;
+		case  1: return eval_pion(ld,cd,la,ca);		break;
+		case -1: return eval_pion(ld,cd,la,ca);		break;
+		case  2: return eval_tour(ld,cd,la,ca); 	break;
+		case -2: return eval_tour(ld,cd,la,ca);		break;
+		case  3: return eval_cavalier(ld,cd,la,ca); break;
+		case -3: return eval_cavalier(ld,cd,la,ca);	break;
+		case  4: return eval_fou(ld,cd,la,ca);		break;
+		case -4: return eval_fou(ld,cd,la,ca);		break;
+		/*case  5: break;
+		case -5: break;
+		case  6: break;
+		case -6: break;*/
 	}
 }
 
