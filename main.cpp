@@ -9,7 +9,7 @@ void afficher(plateau p)
 	{
 		for(int j=0;j<=7;j++)
 		{
-			switch(p.getPiece(i,j))
+			switch(p.get_Piece(i,j))
 			{
 				case 0: cout<<"  "; break;	
 				case 1: cout<<"PB"; break;	
@@ -34,19 +34,19 @@ void afficher(plateau p)
 	}	
 }
 
-void deplacerPiece(plateau &p)
+void deplacer_Piece(plateau &p)
 {
 	int ld,cd,la,ca;
 	do{
 		cout<<"Coord de depart : (L/C) "<<endl;
 		cin>>ld;
 		cin>>cd;
-	}while( (ld<0) || (ld>7) || (cd<0) || (cd>7) || (p.getPiece(ld,cd)==0));	
+	}while( (ld<0) || (ld>7) || (cd<0) || (cd>7) || (p.get_Piece(ld,cd)==0));	
 	cout<<"Coord d arrivee : (L/C) "<<endl;
 	cin>>la;
 	cin>>ca;
 	
-	p.movPiece(ld,cd,la,ca);
+	p.mov_Piece(ld,cd,la,ca);
 }
 
 main()
@@ -56,7 +56,7 @@ main()
 	while(choix!=0)
 	{
 		afficher(p);
-		deplacerPiece(p);
+		deplacer_Piece(p);
 		afficher(p);
 		cout<<"0-exit 1-continue"<<endl;
 		cin>>choix;

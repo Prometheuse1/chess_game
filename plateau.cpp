@@ -2,7 +2,7 @@
 
 plateau::plateau()
 {
-	initPlateau();
+	init_Plateau();
 	//TODO
 }
 plateau::~plateau()
@@ -19,12 +19,12 @@ int plateau::check_arival_space(int ld,int cd,int la,int ca)
 	return 0;
 }
 
-int plateau::evalpion(int ld,int cd,int la,int ca)
+int plateau::eval_pion(int ld,int cd,int la,int ca)
 {
 	//TODO
 }
 
-int plateau::evalcavalier(int ld,int cd,int la,int ca)
+int plateau::eval_cavalier(int ld,int cd,int la,int ca)
 {
 	if( ((ld+2==la)&&(cd+1==ca)) || ((ld+2==la)&&(cd-1==ca)) || ((ld+1==la)&&(cd+2==ca)) || ((ld-1==la)&&(cd+2==ca)) 
 	|| ((ld-2==la)&&(cd+1==ca)) || ((ld-2==la)&&(cd-1==ca)) || ((ld+1==la)&&(cd-2==ca)) || ((ld-1==la)&&(cd-2==ca)) )
@@ -37,21 +37,21 @@ int plateau::evalcavalier(int ld,int cd,int la,int ca)
 	}
 }
 
-int plateau::evaltour(int ld,int cd,int la,int ca)
+int plateau::eval_tour(int ld,int cd,int la,int ca)
 {
-	bool cheminvide;
+	bool chemin_vide;
 	int i;
 	if(ld==la)
 	{
-		cheminvide=true;
+		chemin_vide=true;
 		if(cd<ca)
 		{
 			i=cd+1;
-			while(i<ca && cheminvide==true)
+			while(i<ca && chemin_vide==true)
 			{
 				if(ech[ld][i]!=0)
 				{
-					cheminvide=false;
+					chemin_vide=false;
 				}
 				i++;
 			}
@@ -59,11 +59,11 @@ int plateau::evaltour(int ld,int cd,int la,int ca)
 		else if(cd>ca)
 		{
 			i=cd-1;
-			while(i>ca && cheminvide==true)
+			while(i>ca && chemin_vide==true)
 			{
 				if(ech[ld][i]!=0)
 				{
-					cheminvide=false;
+					chemin_vide=false;
 				}
 				i--;
 			}
@@ -71,15 +71,15 @@ int plateau::evaltour(int ld,int cd,int la,int ca)
 	}
 	if(cd==ca)
 	{
-		cheminvide=true;
+		chemin_vide=true;
 		if(ld<la)
 		{
 			i=ld+1;
-			while(i<la && cheminvide==true)
+			while(i<la && chemin_vide==true)
 			{
 				if(ech[i][cd]!=0)
 				{
-					cheminvide=false;
+					chemin_vide=false;
 				}
 				i++;
 			}
@@ -87,18 +87,18 @@ int plateau::evaltour(int ld,int cd,int la,int ca)
 		if(ld>la)
 		{
 			i=ld-1;
-			while(i>la && cheminvide==true)
+			while(i>la && chemin_vide==true)
 			{
 				if(ech[i][cd]!=0)
 				{
-					cheminvide=false;
+					chemin_vide=false;
 				}
 				i--;
 			}
 		}
 	}
 	
-	if(cheminvide==true)
+	if(chemin_vide==true)
 	{
 		return check_arival_space(ld,cd,la,ca);
 	}
@@ -108,68 +108,53 @@ int plateau::evaltour(int ld,int cd,int la,int ca)
 	}
 }
 
-int plateau::evalfou(int ld,int cd,int la,int ca)
+int plateau::eval_fou(int ld,int cd,int la,int ca)
 {
-	bool cheminvide;
-	int i;
-	if(ld!=la)
-	{
-		cheminvide=true;
-		if(cd<ca)
-		{
-			i=cd+1;
-			while(i<ca && cheminvide==true)
-			{
-				if(ech[ld][i]!=0)
-				{
-					cheminvide=false;
-				}
-				i++;
-			}
-		}
-		else if(cd>ca)
-		{
-			i=cd-1;
-			while(i>ca && cheminvide==true)
-			{
-				if(ech[ld][i]!=0)
-				{
-					cheminvide=false;
-				}
-				i--;
-			}
-		}	
-	}
-	if(cd==ca)
-	{
-		cheminvide=true;
-		if(ld<la)
-		{
-			i=ld+1;
-			while(i<la && cheminvide==true)
-			{
-				if(ech[i][cd]!=0)
-				{
-					cheminvide=false;
-				}
-				i++;
-			}
-		}
-		else if(cd>ca)
-		{
-			i=ld-1;
-			while(i>la && cheminvide==true)
-			{
-				if(ech[i][cd]!=0)
-				{
-					cheminvide=false;
-				}
-				i--;
-			}
-		}
-	}
-	
-	if(cheminvide==true)
+    bool chemin_vide=false;
+    int i,j;
+    if(ld!=la && cd!=ca )
+    {chemin_vide=true;
+        if(la>ld && ca>cd)
+        {  i=ld+1;
+            j=cd+1;
+            while(i<la && chemin_vide==true)
+            {
+                if(ech[i][j]!=0) chemin_vide=false;
+                i++; j++;
+            }
+        }
+        else if(la>ld && ca<cd)
+        {
+            i=ld+1;
+            j=cd-1;
+            while(i<la && chemin_vide==true)
+            {
+                if(ech[i][j]!=0) chemin_vide=false;
+                i++; j--;
+            }
+        }
+        else if(la<ld && ca>cd)
+        {
+            i=ld-1;
+            j=cd+1;
+            while(i>la && chemin_vide==true)
+            {
+                if(ech[i][j]!=0) chemin_vide=false;
+                i--; j++;
+            }
+        }
+        else if(la<ld && ca<cd)
+        {
+            i=ld-1;
+            j=cd-1;
+            while(i>la && chemin_vide==true)
+            {
+                if(ech[i][j]!=0) chemin_vide=false;
+                i--; j--;
+            }
+        }
+    }
+   	if(chemin_vide==true)
 	{
 		return check_arival_space(ld,cd,la,ca);
 	}
@@ -183,21 +168,21 @@ int plateau::evaluation(int ld,int cd,int la,int ca)
 {
 	switch(ech[ld][cd])
 	{
-		case 1: return evalpion(ld,cd,la,ca);
+		case 1: return eval_pion(ld,cd,la,ca);
 			break;
-		case -1: return evalpion(ld,cd,la,ca);
+		case -1: return eval_pion(ld,cd,la,ca);
 			break;
-		case 2: return evaltour(ld,cd,la,ca);
+		case 2: return eval_tour(ld,cd,la,ca);
 			break;
-		case -2: return evaltour(ld,cd,la,ca);
+		case -2: return eval_tour(ld,cd,la,ca);
 			break;
-		case 3: return evalcavalier(ld,cd,la,ca);
+		case 3: return eval_cavalier(ld,cd,la,ca);
 			break;
-		case -3: return evalcavalier(ld,cd,la,ca);
+		case -3: return eval_cavalier(ld,cd,la,ca);
 			break;
-		case 4: return evalfou(ld,cd,la,ca);
+		case 4: return eval_fou(ld,cd,la,ca);
 			break;
-		case -4: return evalfou(ld,cd,la,ca);
+		case -4: return eval_fou(ld,cd,la,ca);
 			break;
 		default:
 			return 1;
@@ -206,7 +191,7 @@ int plateau::evaluation(int ld,int cd,int la,int ca)
 }
 
 
-plateau::movPiece(int ld,int cd,int la,int ca)
+plateau::mov_Piece(int ld,int cd,int la,int ca)
 {
 	if(evaluation(ld,cd,la,ca)==1)
 	{
@@ -220,12 +205,12 @@ plateau::movPiece(int ld,int cd,int la,int ca)
 }
 
 
-int plateau::getPiece(int i,int j)
+int plateau::get_Piece(int i,int j)
 {
 	return ech[i][j];
 }
 
-plateau::initPlateau()
+plateau::init_Plateau()
 {
 	for(int i=2;i<=5;i++)
 	{
