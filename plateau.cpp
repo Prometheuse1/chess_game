@@ -43,8 +43,8 @@ void plateau::scanner_Plateau_IA()
 								case -3  : rep=eval_cavalier(i,j,k,l); break;
 								case -4  : rep=eval_fou(i,j,k,l);      break;
 								case -5  : rep=eval_dame(i,j,k,l);     break;
-								//case -6  : rep=eval_roi(i,j,k,l);      break;
-								default:break;
+								case -6  : rep=eval_roi(i,j,k,l);      break;
+								default  :                             break;
 							}
 							if(rep==1)
 							{
@@ -92,7 +92,7 @@ int plateau::eval_pion(int ld,int cd,int la,int ca)
 		if(la==ld+1 && ca==cd && ech[la][ca]==0)
             return 1;
 
-        if(ld==1 && la==ld+2 && ech[ld+1][cd]==0 && ech[la][ca]==0)
+        if(ld==1 && la==ld+2 && ca==cd && ech[ld+1][cd]==0 && ech[la][ca]==0)
         	return 1;
 
         if(la==ld+1 && (ca==cd+1 || ca==cd-1) && ech[la][ca]<0)
@@ -104,7 +104,7 @@ int plateau::eval_pion(int ld,int cd,int la,int ca)
 		if(la==ld-1 && ca==cd && ech[la][ca]==0)
             return 1;
 
-        if(ld==6 && la==ld-2 && ech[ld-1][cd]==0 && ech[la][ca]==0)
+        if(ld==6 && la==ld-2 && ca==cd && ech[ld-1][cd]==0 && ech[la][ca]==0)
         	return 1;
         
         if(la==ld-1 && (ca==cd+1 || ca==cd-1) && ech[la][ca]>0)
@@ -285,6 +285,15 @@ int plateau::eval_dame(int ld,int cd,int la,int ca)
 	return 0;
 }
 
+int plateau::eval_roi(int ld,int cd,int la,int ca)
+{
+	if(abs(la-ld)<2 && abs(ca-cd)<2)
+	{
+		return check_arival_space(ld,cd,la,ca);
+	}
+	return 0;
+}
+
 int plateau::evaluation(int ld,int cd,int la,int ca)
 {
 	switch(ech[ld][cd])
@@ -299,8 +308,8 @@ int plateau::evaluation(int ld,int cd,int la,int ca)
 		case -4: return eval_fou(ld,cd,la,ca);		break;
 		case  5: return eval_dame(ld,cd,la,ca);		break;
 		case -5: return eval_dame(ld,cd,la,ca);		break;
-		//case  6: break;
-		//case -6: break;
+		case  6: return eval_roi(ld,cd,la,ca);		break;
+		case -6: return eval_roi(ld,cd,la,ca);		break;
 	}
 }
 
