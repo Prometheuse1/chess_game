@@ -41,7 +41,7 @@ void deplacer_Piece(plateau &p)
 		cout<<"Coord de depart : (L/C) "<<endl;
 		cin>>ld;
 		cin>>cd;
-	}while( (ld<0) || (ld>7) || (cd<0) || (cd>7) || (p.get_Piece(ld,cd)==0));	
+	}while( (ld<0) || (ld>7) || (cd<0) || (cd>7) || (p.get_Piece(ld,cd)==0) || ((p.get_Tour()%2==0)&&(p.get_Piece(ld,cd)<0) ) || ((p.get_Tour()%2!=0)&&(p.get_Piece(ld,cd)>0) ));	
 	cout<<"Coord d arrivee : (L/C) "<<endl;
 	cin>>la;
 	cin>>ca;
@@ -49,17 +49,53 @@ void deplacer_Piece(plateau &p)
 	p.mov_Piece(ld,cd,la,ca);
 }
 
+int menu()
+{
+	int a;
+	cout<<"MENU "<<endl<<"1- J vs J"<<endl<<"2- J vs IA"<<endl;
+	cin>>a;
+	return a;
+}
+
 main()
 {
-	int choix=1;
+	int choix;
 	plateau p;
-	while(choix!=0)
+	choix=menu();
+	if(choix==1)
 	{
-		afficher(p);
-		deplacer_Piece(p);
-		afficher(p);
-		cout<<"0-exit 1-continue"<<endl;
-		cin>>choix;
+		do{
+			if(p.get_Tour()%2==0)
+			{
+				cout<<"Joueur Blanc"<<endl;
+				afficher(p);
+				deplacer_Piece(p);			
+			}
+			else
+			{
+				cout<<"Joueur Noir"<<endl;			
+				afficher(p);
+				deplacer_Piece(p);			
+			}
+	
+		}while(p.fin_Partie()==0);
+	}
+	else
+	{
+		do{
+			if(p.get_Tour()%2==0)
+			{
+				cout<<"Joueur Blanc"<<endl;
+				afficher(p);
+				deplacer_Piece(p);			
+			}
+			else
+			{
+				cout<<"Joueur Noir"<<endl;			
+				p.deplacer_IA();
+			}
+	
+		}while(p.fin_Partie()==0);		
 	}
 	
 }

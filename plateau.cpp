@@ -1,13 +1,77 @@
 #include "plateau.h"
+#include "math.h"
 
 plateau::plateau()
 {
 	init_Plateau();
+	cp=0;
 	//TODO
 }
+
 plateau::~plateau()
 {
 	
+}
+
+int plateau::fin_Partie(){
+	return 0;
+}
+
+int plateau::get_Tour(){
+	return tour;
+}
+
+void plateau::scanner_Plateau_IA()
+{
+	int rep;
+	for(int i=0;i<8;i++)
+	{
+		for(int j=0;j<=7;j++)
+		{
+			if(ech[i][j]<0)
+			{
+				for(int k=0;k<=7;k++)
+				{
+					for(int l=0;l<=7;l++)
+					{
+						if(ech[k][l]>=0)
+						{
+							switch(ech[i][j])
+							{
+								case -1  : rep=eval_pion(i,j,k,l);     break;
+								case -2  : rep=eval_tour(i,j,k,l);     break;
+								case -3  : rep=eval_cavalier(i,j,k,l); break;
+								case -4  : rep=eval_fou(i,j,k,l);      break;
+								case -5  : rep=eval_dame(i,j,k,l);     break;
+								//case -6  : rep=eval_roi(i,j,k,l);      break;
+								default:break;
+							}
+							if(rep==1)
+							{
+								t[cp].ld=i;	
+								t[cp].cd=j;	
+								t[cp].la=k;	
+								t[cp].ca=l;	
+								t[cp].poid=0;	
+
+								cp++;
+							}							
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+void plateau::deplacer_IA()
+{
+	cp=0;
+	scanner_Plateau_IA();
+	//evalMovIA();
+	ech[t[0].la][t[0].ca]=ech[t[0].ld][t[0].cd];
+	ech[t[0].ld][t[0].cd]=0;	
+	tour++;		
 }
 
 int plateau::check_arival_space(int ld,int cd,int la,int ca)
@@ -24,30 +88,25 @@ int plateau::eval_pion(int ld,int cd,int la,int ca)
 {
 	if(ech[ld][cd]==1)
 	{
-		// 1 case
+
 		if(la==ld+1 && ca==cd && ech[la][ca]==0)
             return 1;
 
-		// 2 case
         if(ld==1 && la==ld+2 && ech[ld+1][cd]==0 && ech[la][ca]==0)
         	return 1;
-        
-        // attack
+
         if(la==ld+1 && (ca==cd+1 || ca==cd-1) && ech[la][ca]<0)
         	return 1;
 	}
 	
 	if(ech[ld][cd]==-1)
 	{
-		// 1 case
 		if(la==ld-1 && ca==cd && ech[la][ca]==0)
             return 1;
 
-		// 2 case
         if(ld==6 && la==ld-2 && ech[ld-1][cd]==0 && ech[la][ca]==0)
         	return 1;
         
-        // attack
         if(la==ld-1 && (ca==cd+1 || ca==cd-1) && ech[la][ca]>0)
         	return 1;
 	}
@@ -141,47 +200,65 @@ int plateau::eval_tour(int ld,int cd,int la,int ca)
 
 int plateau::eval_fou(int ld,int cd,int la,int ca)
 {
-    bool chemin_vide=false;
+    bool chemin_vide=false,strait_line=true;
     int i,j;
-    if(ld!=la && cd!=ca )
-    {chemin_vide=true;
+    if(abs(la-ld)==abs(ca-cd) && ld!=la && cd!=ca )
+    {
+		chemin_vide=true;
         if(la>ld && ca>cd)
-        {  i=ld+1;
+        {  
+			i=ld+1;
             j=cd+1;
             while(i<la && chemin_vide==true)
             {
-                if(ech[i][j]!=0) chemin_vide=false;
-                i++; j++;
+                if(ech[i][j]!=0) 
+				{
+					chemin_vide=false;
+				}
+                i++; 
+				j++;
             }
         }
-        else if(la>ld && ca<cd)
+        if(la>ld && ca<cd)
         {
             i=ld+1;
             j=cd-1;
             while(i<la && chemin_vide==true)
             {
-                if(ech[i][j]!=0) chemin_vide=false;
-                i++; j--;
+                if(ech[i][j]!=0)
+				{
+					chemin_vide=false;
+				}
+                i++; 
+				j--;
             }
         }
-        else if(la<ld && ca>cd)
+        if(la<ld && ca>cd)
         {
             i=ld-1;
             j=cd+1;
             while(i>la && chemin_vide==true)
             {
-                if(ech[i][j]!=0) chemin_vide=false;
-                i--; j++;
+                if(ech[i][j]!=0) 
+				{
+					chemin_vide=false;
+				}
+                i--; 
+				j++;
             }
         }
-        else if(la<ld && ca<cd)
+        if(la<ld && ca<cd)
         {
             i=ld-1;
             j=cd-1;
             while(i>la && chemin_vide==true)
             {
-                if(ech[i][j]!=0) chemin_vide=false;
-                i--; j--;
+                if(ech[i][j]!=0) 
+				{
+					chemin_vide=false;
+				}
+                i--; 
+				j--;
             }
         }
     }
@@ -195,7 +272,7 @@ int plateau::eval_fou(int ld,int cd,int la,int ca)
 	}
 }
 
-int plateau::eval_reine(int ld,int cd,int la,int ca)
+int plateau::eval_dame(int ld,int cd,int la,int ca)
 {
 	if(eval_tour(ld,cd,la,ca)==1)
 	{
@@ -220,9 +297,10 @@ int plateau::evaluation(int ld,int cd,int la,int ca)
 		case -3: return eval_cavalier(ld,cd,la,ca);	break;
 		case  4: return eval_fou(ld,cd,la,ca);		break;
 		case -4: return eval_fou(ld,cd,la,ca);		break;
-		case  5: return eval_reine(ld,cd,la,ca);	break;
-		case -5: return eval_reine(ld,cd,la,ca);	break;
-		
+		case  5: return eval_dame(ld,cd,la,ca);		break;
+		case -5: return eval_dame(ld,cd,la,ca);		break;
+		//case  6: break;
+		//case -6: break;
 	}
 }
 
@@ -232,7 +310,8 @@ plateau::mov_Piece(int ld,int cd,int la,int ca)
 	if(evaluation(ld,cd,la,ca)==1)
 	{
 		ech[la][ca]=ech[ld][cd];
-		ech[ld][cd]=0;		
+		ech[ld][cd]=0;
+		tour++;
 	}
 	else
 	{
