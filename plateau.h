@@ -15,9 +15,9 @@ class plateau
 		int eval_cavalier(int ld,int cd,int la,int ca);
 		int eval_tour(int ld,int cd,int la,int ca);
 		int eval_fou(int ld,int cd,int la,int ca);
+		int eval_reine(int ld,int cd,int la,int ca);
 		
 	private:
 		int ech[8][8];
 };
-
-#endif
+ #endif

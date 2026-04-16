@@ -195,6 +195,19 @@ int plateau::eval_fou(int ld,int cd,int la,int ca)
 	}
 }
 
+int plateau::eval_reine(int ld,int cd,int la,int ca)
+{
+	if(eval_tour(ld,cd,la,ca)==1)
+	{
+		return 1;
+	}
+	if(eval_fou(ld,cd,la,ca)==1)
+	{
+		return 1;
+	}
+	return 0;
+}
+
 int plateau::evaluation(int ld,int cd,int la,int ca)
 {
 	switch(ech[ld][cd])
@@ -207,10 +220,9 @@ int plateau::evaluation(int ld,int cd,int la,int ca)
 		case -3: return eval_cavalier(ld,cd,la,ca);	break;
 		case  4: return eval_fou(ld,cd,la,ca);		break;
 		case -4: return eval_fou(ld,cd,la,ca);		break;
-		/*case  5: break;
-		case -5: break;
-		case  6: break;
-		case -6: break;*/
+		case  5: return eval_reine(ld,cd,la,ca);	break;
+		case -5: return eval_reine(ld,cd,la,ca);	break;
+		
 	}
 }
 
