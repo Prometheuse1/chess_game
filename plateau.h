@@ -17,6 +17,7 @@ class plateau
 		int get_Tour();
 		void scanner_Plateau_IA();
 		void deplacer_IA();
+		void evalMovIA();
 		int fin_Partie();
 		int get_Piece(int i,int j);
 		mov_Piece(int ld,int cd,int la,int ca);

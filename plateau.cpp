@@ -1,6 +1,10 @@
 #include "plateau.h"
 #include "math.h"
 
+#include <iostream>
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 plateau::plateau()
 {
 	init_Plateau();
@@ -64,11 +68,64 @@ void plateau::scanner_Plateau_IA()
 	}
 }
 
+void plateau::evalMovIA()
+{
+	int val,cpMp=0;
+	predict_move tempcpMp;
+
+	for(int i=0;i<cp;i++)
+	{
+		switch(ech[t[i].la][t[i].ca])
+		{
+			case 0 : break;
+			case 1 : t[i].poid+=5; break;
+			case 2 : t[i].poid+=15; break;
+			case 3 : t[i].poid+=10; break;
+			case 4 : t[i].poid+=20; break;
+			case 5 : t[i].poid+=50; break;
+			case 6 : t[i].poid+=1000; break; // Impossible Echec et mat !!
+			default : break;
+		}
+	}
+	for(int i=0;i<cp;i++)
+	{
+		for(int j=i+1;j<cp;j++)
+		{
+			if(t[i].poid < t[j].poid)
+			{
+				predict_move temp;
+				temp=t[i];
+				t[i]=t[j];
+				t[j]=temp;
+			}
+		}
+	}
+	
+	// si plusieurs poids similaires (meilleur mouv possible)
+	for(int j=0;j<cp;j++)
+	{
+		if(t[0].poid == t[j].poid)
+		{
+			cpMp++;
+		}
+		else
+		{
+			j=cp;
+		}
+	}
+	//..................
+	srand(time(NULL));
+	val=rand()%cpMp;
+	tempcpMp=t[0];
+	t[0]=t[val];
+	t[val]=tempcpMp;	
+}
+
 void plateau::deplacer_IA()
 {
 	cp=0;
 	scanner_Plateau_IA();
-	//evalMovIA();
+	evalMovIA();
 	ech[t[0].la][t[0].ca]=ech[t[0].ld][t[0].cd];
 	ech[t[0].ld][t[0].cd]=0;	
 	tour++;		
