@@ -1,15 +1,15 @@
 #include "plateau.h"
 #include "math.h"
-
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+
 plateau::plateau()
 {
 	init_Plateau();
 	cp=0;
-	//TODO
+	tour=0;
 }
 
 plateau::~plateau()
@@ -17,8 +17,125 @@ plateau::~plateau()
 	
 }
 
-int plateau::fin_Partie(){
+int plateau::roi_en_echec(int couleur)
+{
+	int ki=-1,kj=-1;
+	int roi=couleur*6;
+ 
+	for(int i=0;i<8;i++)
+	{
+		for(int j=0;j<8;j++)
+		{
+			if(ech[i][j]==roi) 
+			{ 
+				ki=i; 
+				kj=j; 
+			}
+		}	
+	}
+	
+	if(ki==-1) return 1;
+ 
+	for(int i=0;i<8;i++)
+	{
+		for(int j=0;j<8;j++)
+		{
+			if(couleur==1 && ech[i][j]<0)
+			{
+				if(evaluation(i,j,ki,kj)==1) return 1;
+			}
+			else if(couleur==-1 && ech[i][j]>0)
+			{
+				if(evaluation(i,j,ki,kj)==1) return 1;
+			}
+		}
+	}
 	return 0;
+}
+
+int plateau::a_mouvement_legal(int couleur)
+{
+	int sauvegarde,piece,toujours_en_echec;
+	for(int i=0;i<8;i++)
+	{
+		for(int j=0;j<8;j++)
+		{
+			if(couleur==1 && ech[i][j]<=0) continue;
+			if(couleur==-1 && ech[i][j]>=0) continue;
+ 
+			for(int k=0;k<8;k++)
+			{
+				for(int l=0;l<8;l++)
+				{
+					if(evaluation(i,j,k,l)==1)
+					{
+						// Simulate the move
+						sauvegarde=ech[k][l];
+						piece=ech[i][j];
+						ech[k][l]=piece;
+						ech[i][j]=0;
+ 
+						toujours_en_echec=roi_en_echec(couleur);
+ 
+						// Undo the move
+						ech[i][j]=piece;
+						ech[k][l]=sauvegarde;
+ 
+						if(toujours_en_echec==0) return 1;
+					}
+				}
+			}
+		}
+	}
+	return 0;
+}
+
+int plateau::fin_Partie(){
+	int couleur;
+	if(tour%2==0)
+	{
+		couleur=1;
+	}
+	else
+	{
+		couleur=-1;
+	}
+ 
+	if(roi_en_echec(couleur)==1 && a_mouvement_legal(couleur)==0)
+	{
+		if(couleur==1)
+		{
+			cout<<"Echec et mat ! Les Noirs gagnent !"<<endl;
+			system("pause");
+		}
+			
+		else
+		{
+			cout<<"Echec et mat ! Les Blancs gagnent !"<<endl;
+			system("pause");
+		}
+			
+		return 1;
+	}
+ 
+	if(roi_en_echec(couleur)==0 && a_mouvement_legal(couleur)==0)
+	{
+		cout<<"Pat ! Match nul !"<<endl;
+		return 1;
+	}
+ 
+	if(roi_en_echec(couleur)==1)
+	{
+		if(couleur == 1)
+		{
+			cout<<"Echec au Roi Blanc !"<<endl;
+		}
+		else
+		{
+			cout<<"Echec au Roi Noir !"<<endl;
+		}
+	}
+	return 0;    
 }
 
 int plateau::get_Tour(){
@@ -27,7 +144,7 @@ int plateau::get_Tour(){
 
 void plateau::scanner_Plateau_IA()
 {
-	int rep;
+	int rep=0;
 	for(int i=0;i<8;i++)
 	{
 		for(int j=0;j<=7;j++)
@@ -78,11 +195,11 @@ void plateau::evalMovIA()
 		switch(ech[t[i].la][t[i].ca])
 		{
 			case 0 : break;
-			case 1 : t[i].poid+=5; break;
-			case 2 : t[i].poid+=15; break;
-			case 3 : t[i].poid+=10; break;
-			case 4 : t[i].poid+=20; break;
-			case 5 : t[i].poid+=50; break;
+			case 1 : t[i].poid+=5;    break;
+			case 2 : t[i].poid+=15;   break;
+			case 3 : t[i].poid+=10;   break;
+			case 4 : t[i].poid+=20;   break;
+			case 5 : t[i].poid+=50;   break;
 			case 6 : t[i].poid+=1000; break; // Impossible Echec et mat !!
 			default : break;
 		}
@@ -126,6 +243,8 @@ void plateau::deplacer_IA()
 	cp=0;
 	scanner_Plateau_IA();
 	evalMovIA();
+	if(cp==0) return;
+	
 	ech[t[0].la][t[0].ca]=ech[t[0].ld][t[0].cd];
 	ech[t[0].ld][t[0].cd]=0;	
 	tour++;		
@@ -146,25 +265,25 @@ int plateau::eval_pion(int ld,int cd,int la,int ca)
 	if(ech[ld][cd]==1)
 	{
 
-		if(la==ld+1 && ca==cd && ech[la][ca]==0)
-            return 1;
-
-        if(ld==1 && la==ld+2 && ca==cd && ech[ld+1][cd]==0 && ech[la][ca]==0)
-        	return 1;
-
-        if(la==ld+1 && (ca==cd+1 || ca==cd-1) && ech[la][ca]<0)
-        	return 1;
-	}
-	
-	if(ech[ld][cd]==-1)
-	{
 		if(la==ld-1 && ca==cd && ech[la][ca]==0)
             return 1;
 
         if(ld==6 && la==ld-2 && ca==cd && ech[ld-1][cd]==0 && ech[la][ca]==0)
         	return 1;
+
+        if(la==ld-1 && (ca==cd+1 || ca==cd-1) && ech[la][ca]<0)
+        	return 1;
+	}
+	
+	if(ech[ld][cd]==-1)
+	{
+		if(la==ld+1 && ca==cd && ech[la][ca]==0)
+            return 1;
+
+        if(ld==1 && la==ld+2 && ca==cd && ech[ld+1][cd]==0 && ech[la][ca]==0)
+        	return 1;
         
-        if(la==ld-1 && (ca==cd+1 || ca==cd-1) && ech[la][ca]>0)
+        if(la==ld+1 && (ca==cd+1 || ca==cd-1) && ech[la][ca]>0)
         	return 1;
 	}
 	
@@ -186,7 +305,7 @@ int plateau::eval_cavalier(int ld,int cd,int la,int ca)
 
 int plateau::eval_tour(int ld,int cd,int la,int ca)
 {
-	bool chemin_vide;
+	bool chemin_vide=false;
 	int i;
 	if(ld==la)
 	{
@@ -257,7 +376,7 @@ int plateau::eval_tour(int ld,int cd,int la,int ca)
 
 int plateau::eval_fou(int ld,int cd,int la,int ca)
 {
-    bool chemin_vide=false,strait_line=true;
+    bool chemin_vide=false;
     int i,j;
     if(abs(la-ld)==abs(ca-cd) && ld!=la && cd!=ca )
     {
@@ -371,17 +490,35 @@ int plateau::evaluation(int ld,int cd,int la,int ca)
 }
 
 
-plateau::mov_Piece(int ld,int cd,int la,int ca)
+void plateau::mov_Piece(int ld,int cd,int la,int ca)
 {
+	int sauvegarde,piece,couleur;
 	if(evaluation(ld,cd,la,ca)==1)
 	{
-		ech[la][ca]=ech[ld][cd];
-		ech[ld][cd]=0;
-		tour++;
-	}
-	else
-	{
-		//TODO
+		sauvegarde=ech[la][ca];
+        piece=ech[ld][cd];
+        ech[la][ca]=piece;
+        ech[ld][cd]=0;
+
+        if(tour%2==0)
+		{
+			couleur=1;
+		}
+		else
+		{
+			couleur=-1;
+		}
+	
+        if(roi_en_echec(couleur)==1)
+        {
+            ech[ld][cd]=piece;
+            ech[la][ca]=sauvegarde;
+            cout<<"Mouvement invalide, votre roi est en echec !"<<endl;
+        }
+        else
+        {
+            tour++;
+        }
 	}
 }
 
@@ -391,7 +528,7 @@ int plateau::get_Piece(int i,int j)
 	return ech[i][j];
 }
 
-plateau::init_Plateau()
+void plateau::init_Plateau()
 {
 	for(int i=2;i<=5;i++)
 	{
@@ -403,27 +540,27 @@ plateau::init_Plateau()
 	
 	for(int j=0;j<=7;j++)
 	{
-		ech[1][j]=1; // Pion Blanc
-		ech[6][j]=-1;// Pion Noir
+		ech[1][j]=-1; // Pion Blanc
+		ech[6][j]=1;// Pion Noir
 	}
 	
-	ech[0][0]=2; // Tour
-	ech[0][1]=3; // Cavalier
-	ech[0][2]=4; // Fou
-	ech[0][3]=6; // Roi
-	ech[0][4]=5; // Reine/Dame
-	ech[0][5]=4; // Fou
-	ech[0][6]=3; // Cavalier
-	ech[0][7]=2; // Tour
+	ech[0][0]=-2; // Tour
+	ech[0][1]=-3; // Cavalier
+	ech[0][2]=-4; // Fou
+	ech[0][3]=-5; // Reine/Dame
+	ech[0][4]=-6; // Roi
+	ech[0][5]=-4; // Fou
+	ech[0][6]=-3; // Cavalier
+	ech[0][7]=-2; // Tour
 
-	ech[7][0]=-2; // Tour
-	ech[7][1]=-3; // Cavalier
-	ech[7][2]=-4; // Fou
-	ech[7][3]=-6; // Roi
-	ech[7][4]=-5; // Reine/Dame
-	ech[7][5]=-4; // Fou
-	ech[7][6]=-3; // Cavalier
-	ech[7][7]=-2; // Tour
+	ech[7][0]=2; // Tour
+	ech[7][1]=3; // Cavalier
+	ech[7][2]=4; // Fou
+	ech[7][3]=5; // Reine/Dame
+	ech[7][4]=6; // Roi
+	ech[7][5]=4; // Fou
+	ech[7][6]=3; // Cavalier
+	ech[7][7]=2; // Tour
 		
 	
 }

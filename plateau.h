@@ -13,14 +13,16 @@ class plateau
 	public:
 		plateau();
 		~plateau();
-		init_Plateau();
+		int roi_en_echec(int couleur);
+		int a_mouvement_legal(int couleur);
+		void init_Plateau();
 		int get_Tour();
 		void scanner_Plateau_IA();
 		void deplacer_IA();
 		void evalMovIA();
 		int fin_Partie();
 		int get_Piece(int i,int j);
-		mov_Piece(int ld,int cd,int la,int ca);
+		void mov_Piece(int ld,int cd,int la,int ca);
 		int check_arival_space(int ld,int cd,int la,int ca);
 		int evaluation(int ld,int cd,int la,int ca);
 		int eval_pion(int ld,int cd,int la,int ca);
@@ -33,7 +35,7 @@ class plateau
 	private:
 		int ech[8][8];
 		int tour;
-		predict_move t[10];
+		predict_move t[1000];
 		int cp;
 };
 
