@@ -7,7 +7,7 @@
 
 plateau::plateau()
 {
-	init_Plateau();
+    init_Plateau();
 	cp=0;
 	tour=0;
 }
@@ -88,54 +88,6 @@ int plateau::a_mouvement_legal(int couleur)
 		}
 	}
 	return 0;
-}
-
-int plateau::fin_Partie(){
-	int couleur;
-	if(tour%2==0)
-	{
-		couleur=1;
-	}
-	else
-	{
-		couleur=-1;
-	}
- 
-	if(roi_en_echec(couleur)==1 && a_mouvement_legal(couleur)==0)
-	{
-		if(couleur==1)
-		{
-			cout<<"Echec et mat ! Les Noirs gagnent !"<<endl;
-			system("pause");
-		}
-			
-		else
-		{
-			cout<<"Echec et mat ! Les Blancs gagnent !"<<endl;
-			system("pause");
-		}
-			
-		return 1;
-	}
- 
-	if(roi_en_echec(couleur)==0 && a_mouvement_legal(couleur)==0)
-	{
-		cout<<"Pat ! Match nul !"<<endl;
-		return 1;
-	}
- 
-	if(roi_en_echec(couleur)==1)
-	{
-		if(couleur == 1)
-		{
-			cout<<"Echec au Roi Blanc !"<<endl;
-		}
-		else
-		{
-			cout<<"Echec au Roi Noir !"<<endl;
-		}
-	}
-	return 0;    
 }
 
 int plateau::get_Tour(){
@@ -242,6 +194,39 @@ void plateau::deplacer_IA()
 {
 	cp=0;
 	scanner_Plateau_IA();
+
+    int valid_cp = 0;
+    predict_move valid_t[1000];
+
+    for(int i=0;i<cp;i++)
+    {
+        int ld=t[i].ld,cd=t[i].cd;
+        int la=t[i].la,ca=t[i].ca;
+
+        // Simulate
+        int sauvegarde=ech[la][ca];
+        int piece=ech[ld][cd];
+        ech[la][ca]=piece;
+        ech[ld][cd]=0;
+
+        int still_in_check=roi_en_echec(-1);
+
+        ech[ld][cd] = piece;
+        ech[la][ca] = sauvegarde;
+
+        if(still_in_check==0)
+        {
+            valid_t[valid_cp++]=t[i];
+        }
+    }
+
+    // Replace the move list with only legal moves
+    for(int i = 0; i < valid_cp; i++)
+    {
+        t[i] = valid_t[i];
+    }
+
+    cp = valid_cp;
 	evalMovIA();
 	if(cp==0) return;
 	
@@ -530,37 +515,35 @@ int plateau::get_Piece(int i,int j)
 
 void plateau::init_Plateau()
 {
-	for(int i=2;i<=5;i++)
-	{
-		for(int j=0;j<=7;j++)
-		{
-			ech[i][j]=0; // Position Vide
-		}
-	}
-	
-	for(int j=0;j<=7;j++)
-	{
-		ech[1][j]=-1; // Pion Blanc
-		ech[6][j]=1;// Pion Noir
-	}
-	
-	ech[0][0]=-2; // Tour
-	ech[0][1]=-3; // Cavalier
-	ech[0][2]=-4; // Fou
-	ech[0][3]=-5; // Reine/Dame
-	ech[0][4]=-6; // Roi
-	ech[0][5]=-4; // Fou
-	ech[0][6]=-3; // Cavalier
-	ech[0][7]=-2; // Tour
+    for(int i=2;i<=5;i++)
+    {
+        for(int j=0;j<=7;j++)
+        {
+            ech[i][j]=0; // Position Vide
+        }
+    }
 
-	ech[7][0]=2; // Tour
-	ech[7][1]=3; // Cavalier
-	ech[7][2]=4; // Fou
-	ech[7][3]=5; // Reine/Dame
-	ech[7][4]=6; // Roi
-	ech[7][5]=4; // Fou
-	ech[7][6]=3; // Cavalier
-	ech[7][7]=2; // Tour
-		
-	
+    for(int j=0;j<=7;j++)
+    {
+        ech[1][j]=-1; // Pion Blanc
+        ech[6][j]=1;// Pion Noir
+    }
+
+    ech[0][0]=-2; // Tour
+    ech[0][1]=-3; // Cavalier
+    ech[0][2]=-4; // Fou
+    ech[0][3]=-5; // Reine/Dame
+    ech[0][4]=-6; // Roi
+    ech[0][5]=-4; // Fou
+    ech[0][6]=-3; // Cavalier
+    ech[0][7]=-2; // Tour
+
+    ech[7][0]=2; // Tour
+    ech[7][1]=3; // Cavalier
+    ech[7][2]=4; // Fou
+    ech[7][3]=5; // Reine/Dame
+    ech[7][4]=6; // Roi
+    ech[7][5]=4; // Fou
+    ech[7][6]=3; // Cavalier
+    ech[7][7]=2; // Tour
 }

@@ -1,6 +1,5 @@
 #ifndef PLATEAU_H
 #define PLATEAU_H
-#include <vector>
 
 using namespace std;
 
@@ -10,6 +9,7 @@ struct predict_move{
 
 class plateau
 {
+    friend class ChessBoard;
 	public:
 		plateau();
 		~plateau();
@@ -35,7 +35,7 @@ class plateau
 	private:
 		int ech[8][8];
 		int tour;
-		predict_move t[1000];
+        predict_move t[10000];
 		int cp;
 };
 
